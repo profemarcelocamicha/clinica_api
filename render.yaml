@@ -1,0 +1,12 @@
+# Exported from Render on 2025-08-12T17:06:43Z
+databases:
+- name: Clinica
+  databaseName: db_turnos
+  user: db_turnos_user
+  plan: free
+  region: oregon
+  ipAllowList:
+  - source: 0.0.0.0/0
+    description: everywhere
+  postgresMajorVersion: "17"
+version: "1"
