@@ -1,13 +1,22 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flasgger import Swagger
 import os
 
 app = Flask(__name__)
 CORS(app)
+swagger = Swagger(app)
 
-# Configuración de la base de datos desde variable de entorno
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+# Configuración DB
+db_url = os.environ.get('DATABASE_URL')
+if db_url is None:
+    db_url = 'sqlite:///turnos.db'
+else:
+    if db_url.startswith('postgres://'):
+        db_url = db_url.replace('postgres://', 'postgresql://')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -31,6 +40,54 @@ class Turno(db.Model):
 
 @app.route('/api/turnos', methods=['POST'])
 def crear_turno():
+    """
+    Crear un nuevo turno médico
+    ---
+    tags:
+      - Turnos
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              paciente:
+                type: string
+                example: "Juan Pérez"
+              medico:
+                type: string
+                example: "Dra. López"
+              fecha:
+                type: string
+                example: "2025-08-20"
+              hora:
+                type: string
+                example: "10:30"
+    responses:
+      201:
+        description: Turno creado con éxito
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mensaje:
+                  type: string
+                turno:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    paciente:
+                      type: string
+                    medico:
+                      type: string
+                    fecha:
+                      type: string
+                    hora:
+                      type: string
+    """
     data = request.json
     nuevo_turno = Turno(
         paciente=data['paciente'],
@@ -44,6 +101,45 @@ def crear_turno():
 
 @app.route('/api/turnos/<int:id>', methods=['GET'])
 def obtener_turno(id):
+    """
+    Obtener un turno por ID
+    ---
+    tags:
+      - Turnos
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID del turno
+    responses:
+      200:
+        description: Detalle del turno
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                paciente:
+                  type: string
+                medico:
+                  type: string
+                fecha:
+                  type: string
+                hora:
+                  type: string
+      404:
+        description: Turno no encontrado
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+    """
     turno = Turno.query.get(id)
     if turno:
         return jsonify(turno.to_dict())
@@ -51,6 +147,69 @@ def obtener_turno(id):
 
 @app.route('/api/turnos/<int:id>', methods=['PUT'])
 def modificar_turno(id):
+    """
+    Modificar un turno existente
+    ---
+    tags:
+      - Turnos
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID del turno
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              paciente:
+                type: string
+                example: "Juan Pérez"
+              medico:
+                type: string
+                example: "Dra. López"
+              fecha:
+                type: string
+                example: "2025-08-20"
+              hora:
+                type: string
+                example: "10:30"
+    responses:
+      200:
+        description: Turno modificado con éxito
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mensaje:
+                  type: string
+                turno:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    paciente:
+                      type: string
+                    medico:
+                      type: string
+                    fecha:
+                      type: string
+                    hora:
+                      type: string
+      404:
+        description: Turno no encontrado
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+    """
     turno = Turno.query.get(id)
     if turno:
         data = request.json
@@ -64,6 +223,37 @@ def modificar_turno(id):
 
 @app.route('/api/turnos/<int:id>', methods=['DELETE'])
 def eliminar_turno(id):
+    """
+    Eliminar un turno por ID
+    ---
+    tags:
+      - Turnos
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID del turno
+    responses:
+      200:
+        description: Turno eliminado con éxito
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mensaje:
+                  type: string
+      404:
+        description: Turno no encontrado
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+    """
     turno = Turno.query.get(id)
     if turno:
         db.session.delete(turno)
@@ -72,4 +262,6 @@ def eliminar_turno(id):
     return jsonify({"error": "Turno no encontrado"}), 404
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(host='0.0.0.0', port=5000)
