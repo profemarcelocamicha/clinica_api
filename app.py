@@ -1,12 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flasgger import Swagger
+from flask_restx import Api, Resource, fields
 import os
 
 app = Flask(__name__)
 CORS(app)
-swagger = Swagger(app)
+api = Api(app, version='1.0', title='API Turnos Médicos',
+          description='API para gestión de turnos con documentación Swagger')
 
 # Configuración DB
 db_url = os.environ.get('DATABASE_URL')
@@ -21,7 +22,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Modelo Turno
+# Modelo DB
 class Turno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     paciente = db.Column(db.String(100), nullable=False)
@@ -31,235 +32,76 @@ class Turno(db.Model):
 
     def to_dict(self):
         return {
-            "id": self.id,
-            "paciente": self.paciente,
-            "medico": self.medico,
-            "fecha": self.fecha,
-            "hora": self.hora
+            'id': self.id,
+            'paciente': self.paciente,
+            'medico': self.medico,
+            'fecha': self.fecha,
+            'hora': self.hora
         }
 
-@app.route('/api/turnos', methods=['POST'])
-def crear_turno():
-    """
-    Crear un nuevo turno médico
-    ---
-    tags:
-      - Turnos
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              paciente:
-                type: string
-                example: "Juan Pérez"
-              medico:
-                type: string
-                example: "Dra. López"
-              fecha:
-                type: string
-                example: "2025-08-20"
-              hora:
-                type: string
-                example: "10:30"
-    responses:
-      201:
-        description: Turno creado con éxito
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                mensaje:
-                  type: string
-                turno:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    paciente:
-                      type: string
-                    medico:
-                      type: string
-                    fecha:
-                      type: string
-                    hora:
-                      type: string
-    """
-    data = request.json
-    nuevo_turno = Turno(
-        paciente=data['paciente'],
-        medico=data['medico'],
-        fecha=data['fecha'],
-        hora=data['hora']
-    )
-    db.session.add(nuevo_turno)
-    db.session.commit()
-    return jsonify({"mensaje": "Turno creado con éxito", "turno": nuevo_turno.to_dict()}), 201
+# Modelo para Swagger (esquema de datos)
+turno_model = api.model('Turno', {
+    'id': fields.Integer(readonly=True, description='ID del turno'),
+    'paciente': fields.String(required=True, description='Nombre del paciente'),
+    'medico': fields.String(required=True, description='Nombre del médico'),
+    'fecha': fields.String(required=True, description='Fecha del turno (YYYY-MM-DD)'),
+    'hora': fields.String(required=True, description='Hora del turno (HH:MM)')
+})
 
-@app.route('/api/turnos/<int:id>', methods=['GET'])
-def obtener_turno(id):
-    """
-    Obtener un turno por ID
-    ---
-    tags:
-      - Turnos
-    parameters:
-      - name: id
-        in: path
-        type: integer
-        required: true
-        description: ID del turno
-    responses:
-      200:
-        description: Detalle del turno
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                paciente:
-                  type: string
-                medico:
-                  type: string
-                fecha:
-                  type: string
-                hora:
-                  type: string
-      404:
-        description: Turno no encontrado
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-    """
-    turno = Turno.query.get(id)
-    if turno:
-        return jsonify(turno.to_dict())
-    return jsonify({"error": "Turno no encontrado"}), 404
+ns = api.namespace('turnos', description='Operaciones sobre turnos')
 
-@app.route('/api/turnos/<int:id>', methods=['PUT'])
-def modificar_turno(id):
-    """
-    Modificar un turno existente
-    ---
-    tags:
-      - Turnos
-    parameters:
-      - name: id
-        in: path
-        type: integer
-        required: true
-        description: ID del turno
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              paciente:
-                type: string
-                example: "Juan Pérez"
-              medico:
-                type: string
-                example: "Dra. López"
-              fecha:
-                type: string
-                example: "2025-08-20"
-              hora:
-                type: string
-                example: "10:30"
-    responses:
-      200:
-        description: Turno modificado con éxito
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                mensaje:
-                  type: string
-                turno:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    paciente:
-                      type: string
-                    medico:
-                      type: string
-                    fecha:
-                      type: string
-                    hora:
-                      type: string
-      404:
-        description: Turno no encontrado
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-    """
-    turno = Turno.query.get(id)
-    if turno:
-        data = request.json
+@ns.route('/')
+class TurnoList(Resource):
+    @ns.marshal_list_with(turno_model)
+    def get(self):
+        """Listar todos los turnos"""
+        turnos = Turno.query.all()
+        return [t.to_dict() for t in turnos]
+
+    @ns.expect(turno_model, validate=True)
+    @ns.marshal_with(turno_model, code=201)
+    def post(self):
+        """Crear un nuevo turno"""
+        data = api.payload
+        nuevo_turno = Turno(
+            paciente=data['paciente'],
+            medico=data['medico'],
+            fecha=data['fecha'],
+            hora=data['hora']
+        )
+        db.session.add(nuevo_turno)
+        db.session.commit()
+        return nuevo_turno.to_dict(), 201
+
+@ns.route('/<int:id>')
+@ns.response(404, 'Turno no encontrado')
+@ns.param('id', 'ID del turno')
+class TurnoResource(Resource):
+    @ns.marshal_with(turno_model)
+    def get(self, id):
+        """Obtener turno por ID"""
+        turno = Turno.query.get_or_404(id)
+        return turno.to_dict()
+
+    @ns.expect(turno_model, validate=True)
+    @ns.marshal_with(turno_model)
+    def put(self, id):
+        """Modificar un turno existente"""
+        turno = Turno.query.get_or_404(id)
+        data = api.payload
         turno.paciente = data['paciente']
         turno.medico = data['medico']
         turno.fecha = data['fecha']
         turno.hora = data['hora']
         db.session.commit()
-        return jsonify({"mensaje": "Turno modificado", "turno": turno.to_dict()})
-    return jsonify({"error": "Turno no encontrado"}), 404
+        return turno.to_dict()
 
-@app.route('/api/turnos/<int:id>', methods=['DELETE'])
-def eliminar_turno(id):
-    """
-    Eliminar un turno por ID
-    ---
-    tags:
-      - Turnos
-    parameters:
-      - name: id
-        in: path
-        type: integer
-        required: true
-        description: ID del turno
-    responses:
-      200:
-        description: Turno eliminado con éxito
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                mensaje:
-                  type: string
-      404:
-        description: Turno no encontrado
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-    """
-    turno = Turno.query.get(id)
-    if turno:
+    def delete(self, id):
+        """Eliminar un turno"""
+        turno = Turno.query.get_or_404(id)
         db.session.delete(turno)
         db.session.commit()
-        return jsonify({"mensaje": "Turno eliminado"})
-    return jsonify({"error": "Turno no encontrado"}), 404
+        return {'mensaje': 'Turno eliminado'}
 
 if __name__ == '__main__':
     with app.app_context():
