@@ -74,11 +74,20 @@ def eliminar_turno(id):
     return jsonify({"error": "Turno no encontrado"}), 404
 
 
+@app.route('/api/turnos', methods=['GET'])
+def listar_turnos():
+    turnos = Turno.query.all()
+    return jsonify([turno.to_dict() for turno in turnos])
+
+
 @app.route('/api/tablas', methods=['GET'])
 def listar_tablas():
     inspector = inspect(db.engine)
     tablas = inspector.get_table_names()
     return jsonify(tablas)
+
+
+
 
 
 with app.app_context():
