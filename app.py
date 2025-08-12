@@ -13,9 +13,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-with app.app_context():
-    db.create_all()
-
 
 # Modelo Turno
 class Turno(db.Model):
@@ -82,6 +79,11 @@ def listar_tablas():
     inspector = inspect(db.engine)
     tablas = inspector.get_table_names()
     return jsonify(tablas)
+
+
+with app.app_context():
+    db.create_all()
+
 
 
 if __name__ == '__main__':
