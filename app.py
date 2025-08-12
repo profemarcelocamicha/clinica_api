@@ -1,3 +1,4 @@
+import inspect
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -70,6 +71,14 @@ def eliminar_turno(id):
         db.session.commit()
         return jsonify({"mensaje": "Turno eliminado"})
     return jsonify({"error": "Turno no encontrado"}), 404
+
+
+@app.route('/api/tablas', methods=['GET'])
+def listar_tablas():
+    inspector = inspect(db.engine)
+    tablas = inspector.get_table_names()
+    return jsonify(tablas)
+
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=5000)
