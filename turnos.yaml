@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: API de Reserva de Turnos Médicos
+  description: API REST para crear, consultar, modificar y eliminar turnos médicos
+  version: "1.0.0"
+
+servers:
+  - url: https://clinica-api-0n5q.onrender.com/api
+
+paths:
+  /turnos:
+    get:
+      summary: Obtener lista de todos los turnos
+      responses:
+        '200':
+          description: Lista de turnos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Turno'
+    post:
+      summary: Crear un nuevo turno
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnoInput'
+      responses:
+        '201':
+          description: Turno creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  turno:
+                    $ref: '#/components/schemas/Turno'
+
+  /turnos/{id}:
+    get:
+      summary: Obtener un turno por ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID del turno
+      responses:
+        '200':
+          description: Turno encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Turno'
+        '404':
+          description: Turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Modificar un turno existente
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID del turno a modificar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnoInput'
+      responses:
+        '200':
+          description: Turno modificado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  turno:
+                    $ref: '#/components/schemas/Turno'
+        '404':
+          description: Turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Eliminar un turno
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID del turno a eliminar
+      responses:
+        '200':
+          description: Turno eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '404':
+          description: Turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Turno:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        paciente:
+          type: string
+          example: "Juan Perez"
+        medico:
+          type: string
+          example: "Dra. Gomez"
+        fecha:
+          type: string
+          format: date
+          example: "2025-08-15"
+        hora:
+          type: string
+          example: "14:30"
+
+    TurnoInput:
+      type: object
+      required:
+        - paciente
+        - medico
+        - fecha
+        - hora
+      properties:
+        paciente:
+          type: string
+          example: "Juan Perez"
+        medico:
+          type: string
+          example: "Dra. Gomez"
+        fecha:
+          type: string
+          format: date
+          example: "2025-08-15"
+        hora:
+          type: string
+          example: "14:30"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Turno no encontrado"
