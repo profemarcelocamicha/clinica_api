@@ -81,12 +81,16 @@ def listar_turnos():
     return jsonify([turno.to_dict() for turno in turnos])
 
 
-@app.route('/api/tablas', methods=['GET'])
-def listar_tablas():
-    inspector = inspect(db.engine)
-    tablas = inspector.get_table_names()
-    return jsonify(tablas)
+# @app.route('/api/tablas', methods=['GET'])
+# def listar_tablas():
+#     inspector = inspect(db.engine)
+#     tablas = inspector.get_table_names()
+#     return jsonify(tablas)
 
+@app.route('/api/tablas', methods=['GET'])
+def listar_tablas_seguras():
+    tablas = ["turno", "profesional"]
+    return jsonify(tablas)
 
 
 
