@@ -97,7 +97,7 @@ class Profesional(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     apellido = db.Column(db.String(100), nullable=False)
     fechaNac = db.Column(db.String(10), nullable=False)
-    dirección = db.Column(db.String(100), nullable=False)
+    direccion = db.Column(db.String(100), nullable=False)
 
     def to_dict(self):
         return {
