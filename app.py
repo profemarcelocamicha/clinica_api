@@ -160,12 +160,9 @@ def listar_profesional():
 
 
 
-
-
-
-
 with app.app_context():
-    db.create_all()
+    db.drop_all()   # elimina tablas existentes
+    db.create_all() # crea todas las tablas con la definición actual
 
 
 
