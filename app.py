@@ -91,6 +91,79 @@ def listar_tablas():
 
 
 
+# Modelo Profesional
+class Profesional(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    apellido = db.Column(db.String(100), nullable=False)
+    fechaNac = db.Column(db.String(10), nullable=False)
+    dirección = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "apellido": self.apellido,
+            "fechaNac": self.fechaNac,
+            "direccion": self.direccion
+        }
+
+@app.route('/api/profesional', methods=['POST'])
+def crear_profesional():
+    data = request.json
+    nuevo_profesional = Profesional(
+        nombre=data['nombre'],
+        apellido=data['apellido'],
+        fechaNac=data['fechaNac'],
+        direccion=data['direccion']
+    )
+    db.session.add(nuevo_profesional)
+    db.session.commit()
+    return jsonify({"mensaje": "profesional creado con éxito", "profesional": nuevo_profesional.to_dict()}), 201
+
+@app.route('/api/profesional/<int:id>', methods=['GET'])
+def obtener_profesional(id):
+    profesional = Profesional.query.get(id)
+    if profesional:
+        return jsonify(profesional.to_dict())
+    return jsonify({"error": "profesional no encontrado"}), 404
+
+@app.route('/api/profesional/<int:id>', methods=['PUT'])
+def modificar_profesional(id):
+    profesional = Profesional.query.get(id)
+    if profesional:
+        data = request.json
+        profesional.nombre = data['nombre']
+        profesional.apellido = data['apellido']
+        profesional.fechaNac = data['fechaNac']
+        profesional.direccion = data['direccion']
+        db.session.commit()
+        return jsonify({"mensaje": "profesional modificado", "profesional": profesional.to_dict()})
+    return jsonify({"error": "profesional no encontrado"}), 404
+
+@app.route('/api/profesional/<int:id>', methods=['DELETE'])
+def eliminar_profesional(id):
+    profesional = Profesional.query.get(id)
+    if profesional:
+        db.session.delete(profesional)
+        db.session.commit()
+        return jsonify({"mensaje": "profesional eliminado"})
+    return jsonify({"error": "profesional no encontrado"}), 404
+
+
+@app.route('/api/profesional', methods=['GET'])
+def listar_profesional():
+    profesional = Profesional.query.all()
+    return jsonify([profesional.to_dict() for profesional in profesional])
+
+
+
+
+
+
+
+
+
 with app.app_context():
     db.create_all()
 
