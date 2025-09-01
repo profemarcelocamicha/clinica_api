@@ -1,5 +1,5 @@
 # APIs reserva de turnos
-import inspect
+# import inspect
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -159,8 +159,6 @@ def eliminar_profesional(id):
 def listar_profesional():
     profesional = Profesional.query.all()
     return jsonify([profesional.to_dict() for profesional in profesional])
-
-
 
 
 

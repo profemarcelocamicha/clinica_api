@@ -5,10 +5,10 @@ url = 'https://clinica-api-0n5q.onrender.com/api/turnos'
 
 
 data = {
-    "paciente": "Nazareno Rodriguez",
-    "medico": "Dr. Gimenez Alberto",
-    "fecha": "2025-09-03",
-    "hora": "13:00"
+    "paciente": "Emma Rodriguez",
+    "medico": "Dr. Fernandez Alberto",
+    "fecha": "2025-10-03",
+    "hora": "13:30"
 }
 
 response = requests.post(url, json=data)
