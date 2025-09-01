@@ -4,6 +4,9 @@ import requests
 url = 'https://clinica-api-0n5q.onrender.com/api/turnos/2'
 
 # main
+def funcion2_dev () {
+    print("funcion2-dev")
+}
 
 response = requests.get(url)
 print(response.json())
