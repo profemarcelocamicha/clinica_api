@@ -19,6 +19,7 @@ db = SQLAlchemy(app)
 class Turno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     paciente = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)    
     medico = db.Column(db.String(100), nullable=False)
     fecha = db.Column(db.String(10), nullable=False)
     hora = db.Column(db.String(5), nullable=False)
@@ -27,6 +28,7 @@ class Turno(db.Model):
         return {
             "id": self.id,
             "paciente": self.paciente,
+            "email": self.email,            
             "medico": self.medico,
             "fecha": self.fecha,
             "hora": self.hora
@@ -37,6 +39,7 @@ def crear_turno():
     data = request.json
     nuevo_turno = Turno(
         paciente=data['paciente'],
+        email=data['email'],        
         medico=data['medico'],
         fecha=data['fecha'],
         hora=data['hora']
@@ -58,6 +61,7 @@ def modificar_turno(id):
     if turno:
         data = request.json
         turno.paciente = data['paciente']
+        turno.email = data['email']        
         turno.medico = data['medico']
         turno.fecha = data['fecha']
         turno.hora = data['hora']
@@ -163,7 +167,7 @@ def listar_profesional():
 
 
 with app.app_context():
-    # db.drop_all()   # elimina tablas existentes
+    db.drop_all()   # elimina tablas existentes
     db.create_all() # crea todas las tablas con la definición actual
 
 
