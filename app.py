@@ -69,6 +69,14 @@ def modificar_turno(id):
         return jsonify({"mensaje": "Turno modificado", "turno": turno.to_dict()})
     return jsonify({"error": "Turno no encontrado"}), 404
 
+@app.route('/api/turnos/email/<string:email>', methods=['GET'])
+def obtener_turnos_por_email(email):
+    turnos = Turno.query.filter_by(email=email).all()
+    if turnos:
+        return jsonify([turno.to_dict() for turno in turnos])
+    return jsonify([]), 200
+
+
 @app.route('/api/turnos/<int:id>', methods=['DELETE'])
 def eliminar_turno(id):
     turno = Turno.query.get(id)
