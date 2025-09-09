@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 CORS(app)
@@ -184,3 +185,23 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 
 
+
+
+SWAGGER_URL = "/docs"  # URL para acceder a Swagger UI
+API_URL = "/swagger.json"  # Donde serviremos el archivo JSON
+
+# Configurar Swagger UI
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={"app_name": "API Turnos Clínica"}
+)
+
+# Registrar Swagger UI en la app Flask
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+# Servir el archivo swagger.json
+@app.route("/swagger.json")
+def swagger_json():
+    from flask import send_file
+    return send_file("swagger.json", mimetype="application/json")
