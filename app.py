@@ -6,6 +6,7 @@ from flask_cors import CORS
 import os
 from flask_swagger_ui import get_swaggerui_blueprint
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -175,6 +176,30 @@ def listar_profesional():
 
 
 
+SWAGGER_URL = "/docs"  # URL para acceder a Swagger UI
+API_URL = "/swagger.json"  # Donde serviremos el archivo JSON
+# Configurar Swagger UI
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={"app_name": "API Turnos Clínica"}
+)
+# Registrar Swagger UI en la app Flask
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+# Servir el archivo swagger.json
+@app.route("/swagger.json")
+def swagger_json():
+    from flask import send_file
+    return send_file("swagger.json", mimetype="application/json")
+
+
+
+
+
+
+
+
+
 with app.app_context():
     # db.drop_all()   # elimina tablas existentes
     db.create_all() # crea todas las tablas con la definición actual
@@ -187,21 +212,4 @@ if __name__ == '__main__':
 
 
 
-SWAGGER_URL = "/docs"  # URL para acceder a Swagger UI
-API_URL = "/swagger.json"  # Donde serviremos el archivo JSON
 
-# Configurar Swagger UI
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={"app_name": "API Turnos Clínica"}
-)
-
-# Registrar Swagger UI en la app Flask
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-
-# Servir el archivo swagger.json
-@app.route("/swagger.json")
-def swagger_json():
-    from flask import send_file
-    return send_file("swagger.json", mimetype="application/json")

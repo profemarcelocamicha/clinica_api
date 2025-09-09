@@ -1,0 +1,179 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API de Turnos - Clínica",
+    "version": "1.0",
+    "description": "API para gestionar turnos médicos y profesionales"
+  },
+  "basePath": "/api",
+  "schemes": ["https"],
+  "paths": {
+    "/turnos": {
+      "get": {
+        "summary": "Listar todos los turnos",
+        "responses": {
+          "200": {
+            "description": "Lista de turnos"
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear un turno",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "turno",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paciente": {"type": "string"},
+                "email": {"type": "string"},
+                "medico": {"type": "string"},
+                "fecha": {"type": "string"},
+                "hora": {"type": "string"}
+              },
+              "required": ["paciente", "email", "medico", "fecha", "hora"]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Turno creado con éxito"
+          }
+        }
+      }
+    },
+    "/turnos/{id}": {
+      "get": {
+        "summary": "Obtener un turno por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {"description": "Turno encontrado"},
+          "404": {"description": "Turno no encontrado"}
+        }
+      },
+      "put": {
+        "summary": "Modificar un turno",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "type": "integer"},
+          {
+            "in": "body",
+            "name": "turno",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paciente": {"type": "string"},
+                "email": {"type": "string"},
+                "medico": {"type": "string"},
+                "fecha": {"type": "string"},
+                "hora": {"type": "string"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Turno modificado"},
+          "404": {"description": "Turno no encontrado"}
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un turno",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "type": "integer"}
+        ],
+        "responses": {
+          "200": {"description": "Turno eliminado"},
+          "404": {"description": "Turno no encontrado"}
+        }
+      }
+    },
+    "/profesional": {
+      "get": {
+        "summary": "Listar todos los profesionales",
+        "responses": {
+          "200": {
+            "description": "Lista de profesionales"
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear un profesional",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "profesional",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nombre": {"type": "string"},
+                "apellido": {"type": "string"},
+                "fechaNac": {"type": "string"},
+                "direccion": {"type": "string"}
+              },
+              "required": ["nombre", "apellido", "fechaNac", "direccion"]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Profesional creado con éxito"
+          }
+        }
+      }
+    },
+    "/profesional/{id}": {
+      "get": {
+        "summary": "Obtener un profesional por ID",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "type": "integer"}
+        ],
+        "responses": {
+          "200": {"description": "Profesional encontrado"},
+          "404": {"description": "Profesional no encontrado"}
+        }
+      },
+      "put": {
+        "summary": "Modificar un profesional",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "type": "integer"},
+          {
+            "in": "body",
+            "name": "profesional",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nombre": {"type": "string"},
+                "apellido": {"type": "string"},
+                "fechaNac": {"type": "string"},
+                "direccion": {"type": "string"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Profesional modificado"},
+          "404": {"description": "Profesional no encontrado"}
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un profesional",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "type": "integer"}
+        ],
+        "responses": {
+          "200": {"description": "Profesional eliminado"},
+          "404": {"description": "Profesional no encontrado"}
+        }
+      }
+    }
+  }
+}
