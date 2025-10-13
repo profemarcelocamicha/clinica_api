@@ -32,7 +32,7 @@ def obtener_turno(id):
     return jsonify({"error": "Turno no encontrado"}), 404
 
 
-@turnos_bp.route('/api/turnos/email/<string:email>', methods=['GET'])
+@turnos_bp.route('/email/<string:email>', methods=['GET'])
 def obtener_turnos_por_email(email):
     turnos = Turno.query.filter_by(email=email).all()
     if turnos:
