@@ -36,3 +36,11 @@ def notificar_usuario():
 
     result = enviar_notificacion(usuario.token_fcm, titulo, cuerpo)
     return jsonify({"status": "ok", "resultado": result})
+
+@usuarios_bp.route("/listar", methods=["GET"])
+def listar_usuarios():
+    from models import Usuario
+    usuarios = Usuario.query.all()
+    return {
+        "usuarios": [u.to_dict() for u in usuarios]
+    }
