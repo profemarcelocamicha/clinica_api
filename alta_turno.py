@@ -5,10 +5,10 @@ url = 'https://clinica-api-0n5q.onrender.com/api/turnos'
 
 
 data = {
-    "paciente": "Jose Contreras",
-    "email": "jose@gmail.com",    
-    "medico": "Dra. Barbara Donato",
-    "fecha": "2025-09-13",
+    "paciente": "Mili Pili",
+    "email": "mili@gmail.com",    
+    "medico": "Dra. Ripamontti Guillermina",
+    "fecha": "2025-12-13",
     "hora": "9:45"
 }
 

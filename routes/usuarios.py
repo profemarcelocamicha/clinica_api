@@ -4,6 +4,20 @@ from services.notifications import enviar_notificacion
 
 usuarios_bp = Blueprint("usuarios", __name__)
 
+
+@usuarios_bp.route("", methods=["POST"])
+def crear_usuario():
+    data = request.json
+    nuevo_usuario = Usuario(
+        user_id=data['userId'],
+        token_fcm=data['token_fcm'],
+    )
+    db.session.add(nuevo_usuario)
+    db.session.commit()
+    return jsonify({"mensaje": "Usuario creado con éxito", "Usuario": nuevo_usuario.to_dict()}), 201
+
+
+
 @usuarios_bp.route("/token", methods=["POST"])
 def guardar_token_usuario():
     data = request.form
