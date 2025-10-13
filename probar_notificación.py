@@ -1,8 +1,8 @@
 import requests
+from services.notifications import enviar_notificacion
 
 # URLs de la API
 API_LISTAR = "https://clinica-api-0n5q.onrender.com/api/usuarios/listar"
-API_NOTIFICAR = "https://clinica-api-0n5q.onrender.com/api/usuarios/notificar"
 
 # Paso 1: listar usuarios
 try:
@@ -20,29 +20,14 @@ if not usuarios:
 # Mostrar usuarios
 print("Usuarios registrados:")
 for u in usuarios:
-    print(f"- id: {u['user_id']}")
+    print(f"- id: {u['user_id']} {u['token_fcm']} ")
 
 # Paso 2: seleccionar usuario
-# user_id = usuarios[0]['user_id']  # tomamos el primer usuario como ejemplo
-user_id = usuarios[0]['token_fcm']  # tomamos el primer usuario como ejemplo
-# user_id = usuarios[0]['token_fcm']  # tomamos el primer usuario como ejemplo
+user_id = usuarios[0]['user_id']  # tomamos el primer usuario como ejemplo
+token_fcm = usuarios[0]['token_fcm']  # tomamos el primer token como ejemplo
 
 print(f"\nEnviando notificación al usuario: {user_id}")
 
-# Paso 3: preparar payload
-payload = {
-    "userId": user_id,
-    "titulo": "Turno confirmado",
-    "cuerpo": "Tu turno fue confirmado para mañana a las 10:00"
-}
-
-# Paso 4: enviar notificación
-try:
-    response = requests.post(API_NOTIFICAR, json=payload)
-    print("Status code:", response.status_code)
-    try:
-        print("Respuesta:", response.json())
-    except ValueError:
-        print("La respuesta no es JSON:", response.text)
-except requests.exceptions.RequestException as e:
-    print("Error al enviar notificación:", e)
+token_fcm = "c3PXXOF3RimvCeo_ucqX9M:APA91bFlTB247CDWtrS-oBKj-74ktW3D0rGOUsxFAbR42eG3JvsdsS0MJMx8cCpbTDg0MZMQWJJfjLZhWWdNvmNiwoWQnYC1EylpwGIXCRID6kzdXTd25QY"
+resultado = enviar_notificacion(token_fcm, "Hola 2", "Prueba desde HTTP v1 2")
+print(resultado)
