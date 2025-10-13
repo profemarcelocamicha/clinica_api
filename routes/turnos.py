@@ -1,7 +1,9 @@
+
 from flask import Blueprint, request, jsonify
 from models import db, Turno
 
-turnos_bp = Blueprint("turnos", __name__)
+# turnos_bp = Blueprint("turnos", __name__)
+turnos_bp = Blueprint("turnos_bp", __name__)
 
 @turnos_bp.route("", methods=["POST"])
 def crear_turno():
