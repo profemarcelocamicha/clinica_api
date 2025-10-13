@@ -1,0 +1,38 @@
+from flask import Blueprint, request, jsonify
+from models import db, Usuario
+from services.notifications import enviar_notificacion
+
+usuarios_bp = Blueprint("usuarios", __name__)
+
+@usuarios_bp.route("/token", methods=["POST"])
+def guardar_token_usuario():
+    data = request.form
+    user_id = data.get("userId")
+    token = data.get("token")
+
+    if not user_id or not token:
+        return jsonify({"status": "error", "message": "Faltan datos"}), 400
+
+    usuario = Usuario.query.filter_by(user_id=user_id).first()
+    if usuario:
+        usuario.token_fcm = token
+    else:
+        usuario = Usuario(user_id=user_id, token_fcm=token)
+        db.session.add(usuario)
+
+    db.session.commit()
+    return jsonify({"status": "ok", "message": "Token guardado correctamente"})
+
+@usuarios_bp.route("/notificar", methods=["POST"])
+def notificar_usuario():
+    data = request.json
+    user_id = data.get("userId")
+    titulo = data.get("titulo", "Notificación")
+    cuerpo = data.get("cuerpo", "Mensaje desde la clínica")
+
+    usuario = Usuario.query.filter_by(user_id=user_id).first()
+    if not usuario:
+        return jsonify({"status": "error", "message": "Usuario no encontrado"}), 404
+
+    result = enviar_notificacion(usuario.token_fcm, titulo, cuerpo)
+    return jsonify({"status": "ok", "resultado": result})
