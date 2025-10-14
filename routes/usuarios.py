@@ -67,3 +67,6 @@ def listar_usuarios():
         "email": u.email,
         "token_fcm": u.token_fcm
     } for u in usuarios])
+
+
+
