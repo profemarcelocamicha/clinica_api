@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models import db, Usuario
 from services.notifications import enviar_notificacion
 
-usuarios_bp = Blueprint("usuarios", __name__)
+usuarios_bp = Blueprint("usuarios_bp", __name__)
 
 
 @usuarios_bp.route("", methods=["POST"])
@@ -62,11 +62,8 @@ def notificar_usuario():
 @usuarios_bp.route("", methods=["GET"])
 def listar_usuarios():
     usuarios = Usuario.query.all()
-    return jsonify([{
-        "user_id": u.user_id,
-        "email": u.email,
-        "token_fcm": u.token_fcm
-    } for u in usuarios])
-
-
+    return {
+        "usuarios": [u.to_dict() for u in usuarios]
+    }    
+    # return jsonify([u.to_dict() for u in usuarios])    
 
