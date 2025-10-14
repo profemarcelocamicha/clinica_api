@@ -8,16 +8,32 @@ from google.auth.transport.requests import Request
 PROJECT_ID = "appmobile-e16c2"
 
 def obtener_token_acceso():
-    # Leer las credenciales desde la variable de entorno
-    credenciales_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+    """
+    Obtiene el token de acceso para usar Firebase Cloud Messaging (FCM),
+    leyendo las credenciales desde Render o desde tu PC local.
+    """
 
-    if not credenciales_json:
-        raise ValueError("❌ No se encontró la variable de entorno FIREBASE_CREDENTIALS_JSON")
+    # Render (Linux), el archivo en /etc/secrets/
+    ruta_credenciales_render = "/etc/secrets/credenciales.json"
 
-    # Parsear el JSON (que está almacenado como texto en la variable de entorno)
-    cred_dict = json.loads(credenciales_json)
+    # Windows en una ruta local
+    ruta_credenciales_local = "C:\\api_turnos_db\\etc\\secrets\\credenciales.json"
 
-    # Crear las credenciales desde el diccionario
+    # Elegir la ruta según el entorno
+    if os.path.exists(ruta_credenciales_render):
+        ruta_credenciales = ruta_credenciales_render
+        print("render")
+    elif os.path.exists(ruta_credenciales_local):
+        ruta_credenciales = ruta_credenciales_local
+        print("local:", ruta_credenciales)        
+    else:
+        raise FileNotFoundError("❌ No se encontró el archivo de credenciales ni en Render ni en local.")
+
+    # Leer el archivo JSON
+    with open(ruta_credenciales, "r", encoding="utf-8") as archivo:
+        cred_dict = json.load(archivo)
+
+    # Crear las credenciales
     credentials = service_account.Credentials.from_service_account_info(
         cred_dict,
         scopes=["https://www.googleapis.com/auth/firebase.messaging"],
@@ -26,7 +42,11 @@ def obtener_token_acceso():
     credentials.refresh(Request())
     return credentials.token
 
+
 def enviar_notificacion(token, titulo, cuerpo):
+    """
+    Envía una notificación push usando Firebase Cloud Messaging (FCM).
+    """
     url = f"https://fcm.googleapis.com/v1/projects/{PROJECT_ID}/messages:send"
     headers = {
         "Authorization": f"Bearer {obtener_token_acceso()}",
@@ -46,5 +66,5 @@ def enviar_notificacion(token, titulo, cuerpo):
     response = requests.post(url, headers=headers, data=json.dumps(message))
     try:
         return response.json()
-    except:
+    except Exception:
         return {"status": "error", "text": response.text}
