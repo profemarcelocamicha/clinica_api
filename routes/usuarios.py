@@ -59,7 +59,7 @@ def notificar_usuario():
 #         "usuarios": [u.to_dict() for u in usuarios]
 #     }
 
-@usuarios_bp.route("/usuarios", methods=["GET"])
+@usuarios_bp.route("", methods=["GET"])
 def listar_usuarios():
     usuarios = Usuario.query.all()
     return jsonify([{
