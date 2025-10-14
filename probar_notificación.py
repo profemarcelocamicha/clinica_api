@@ -2,7 +2,7 @@ import requests
 from services.notifications import enviar_notificacion
 
 # URLs de la API
-API_LISTAR = "https://clinica-api-0n5q.onrender.com/api/usuarios/listar"
+API_LISTAR = "https://clinica-api-0n5q.onrender.com/api/usuarios/usuarios"
 
 # Paso 1: listar usuarios
 try:
