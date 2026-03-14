@@ -4,7 +4,7 @@ import requests
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
 
-# ID de tu proyecto Firebase
+# ID de proyecto Firebase
 PROJECT_ID = "appmobile-e16c2"
 
 def obtener_token_acceso():
