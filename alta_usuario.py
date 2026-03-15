@@ -1,7 +1,5 @@
 import requests
 
-import json
-
 url = "https://clinica-api-0n5q.onrender.com/api/usuarios"
 data = {
     "userId": "prueba123",
