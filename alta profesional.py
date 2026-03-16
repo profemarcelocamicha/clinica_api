@@ -4,10 +4,10 @@ import requests
 url = 'https://clinica-api-0n5q.onrender.com/api/profesionales'
 
 data = {
-    "nombre": "Marcelo",
-    "apellido": "Gomez",
-    "fechaNac": "1995-08-23",
-    "direccion": "Rivadavia 1986 - Morón"
+    "nombre": "Pamela",
+    "apellido": "Garay",
+    "fechaNac": "1975-08-20",
+    "direccion": "Olavarria 986 - Mar del Plata",
 }
 
 
