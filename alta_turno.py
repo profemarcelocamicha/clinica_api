@@ -4,11 +4,11 @@ import requests
 url = 'https://clinica-api-0n5q.onrender.com/api/turnos'
 
 data = {
-    "paciente": "Mili Pili",
-    "email": "mili@gmail.com",    
-    "medico": "Dra. Ripamontti Guillermina",
-    "fecha": "2025-12-13",
-    "hora": "9:45"
+    "paciente": "Milagros Gonzalez",
+    "email": "milagrosgonzalez@gmail.com",    
+    "medico": "Guillen Andres",
+    "fecha": "2026-04-03",
+    "hora": "8:00"
 }
 
 response = requests.post(url, json=data)

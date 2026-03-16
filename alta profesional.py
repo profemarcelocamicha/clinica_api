@@ -1,7 +1,7 @@
 import requests
 
 # url = 'http://localhost:5000/api/turnos'
-url = 'https://clinica-api-0n5q.onrender.com/api/profesional'
+url = 'https://clinica-api-0n5q.onrender.com/api/profesionales'
 
 data = {
     "nombre": "Marcelo",
@@ -12,9 +12,11 @@ data = {
 
 
 response = requests.post(url, json=data)
-print(response.json())
+# print(response.json())
 
-
+print("Status:", response.status_code)
+print("Respuesta cruda:")
+print(response.text)
 
 
 
