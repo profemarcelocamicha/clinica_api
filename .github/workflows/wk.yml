@@ -1,66 +1,102 @@
-name: Python CI/CD
+name: CI/CD Completo con Aprobación
 
 on:
-  push:
-    branches: [ feature/* ] #solo se ejecuta cuando el push es en una rama que empieza con feature/
   pull_request:
-    # branches: [ develop, main ] #solo se ejecuta cuando se hace un pull request a qa o main
-    branches: [ develop, main ] #solo se ejecuta cuando se hace un pull request a homologacion o main    
+    branches:
+      - develop
+
+  push:
+    branches:
+      - develop
 
 jobs:
 
-  test:
-    runs-on: ubuntu-latest # worker o runner donde se ejecuta el job
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4 # baja el codigo
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11" # setea la version de python a usar en el job
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt #instala dependencias.. no hace falta tener dos requirements pero es una buena practica separar las de produccion de las de desarrollo
-
-      - name: Lint code
-        run: |
-          flake8 app
-
-      - name: Security scan (bandit)
-        run: |
-          bandit -r app ## https://github.com/PyCQA/bandit
-
-      - name: Dependency vulnerability scan
-        run: |
-          pip-audit
-
-      - name: Run unit tests
-        run: |
-          pytest tests/unit
-
-      - name: Run integration tests
-        run: |
-          pytest tests/integration
-
-      - name: Coverage report
-        run: |
-          pytest --cov=app --cov-report=xml --cov-report=term #esto lo pueden cambiar por sonar pero q sea el gratis
-
-  deploy:
-
-    needs: test
-
+  # 🧪 1. UNIT TESTS (en PR)
+  unit-tests:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/main' #solo se ejecuta cuando el push es en main
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+
+      - run: pip install -r requirements.txt
+
+      - name: Ejecutar Unit Tests
+        run: pytest tests/unit
+
+  # 🚀 2. DEPLOY A DEV (solo si unit tests OK)
+  deploy-dev:
+    needs: unit-tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
 
     steps:
-
-      - name: Deploy to Render
+      - name: Deploy a DEV
         run: |
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+          echo "Deployando a DEV..."
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_DEV }}
+
+  # 🔗 3. INTEGRATION TESTS (merge a develop)
+  integration-tests:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+
+      - run: pip install -r requirements.txt
+
+      - name: Ejecutar Integration Tests
+        run: pytest tests/integration
+
+  # 🚀 4. DEPLOY A QA
+  deploy-qa:
+    needs: integration-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy a QA
+        run: |
+          echo "Deployando a QA..."
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_QA }}
+
+  # 🔒 5. SECURITY TESTS (sobre QA)
+  security-tests:
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ejecutar Security Tests
+        run: |
+          pip install bandit
+          bandit -r .
+
+  # ⏳ 6. APROBACIÓN MANUAL
+  approval:
+    needs: security-tests
+    runs-on: ubuntu-latest
+    environment:
+      name: production   # 🔥 esto habilita aprobación manual en GitHub
+
+    steps:
+      - name: Esperando aprobación manual
+        run: echo "Aprobación requerida para producción"
+
+  # 🚀 7. DEPLOY A PRODUCCIÓN
+  deploy-prd:
+    needs: approval
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy a Producción
+        run: |
+          echo "Deployando a PRD..."
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRD }}
