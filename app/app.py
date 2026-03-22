@@ -14,6 +14,9 @@ def create_app():
     app.register_blueprint(turnos_bp)
     app.register_blueprint(usuarios_bp)
 
+    print("RUTAS DISPONIBLES:")
+    print(app.url_map)
+
     return app
 
 app = create_app()
