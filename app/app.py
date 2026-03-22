@@ -1,4 +1,5 @@
-from flask import Flask, app
+# app.py
+from flask import Flask
 
 from routes.env import env_bp
 from routes.usuarios import usuarios_bp
