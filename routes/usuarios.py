@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, Usuario
-from services.notifications import enviar_notificacion
+# from services.notifications import enviar_notificacion
 
 usuarios_bp = Blueprint("usuarios_bp", __name__)
 
@@ -48,8 +48,8 @@ def notificar_usuario():
     if not usuario:
         return jsonify({"status": "error", "message": "Usuario no encontrado"}), 404
 
-    result = enviar_notificacion(usuario.token_fcm, titulo, cuerpo)
-    return jsonify({"status": "ok", "resultado": result})
+    # result = enviar_notificacion(usuario.token_fcm, titulo, cuerpo)
+    # return jsonify({"status": "ok", "resultado": result})
 
 # @usuarios_bp.route("/listar", methods=["GET"])
 # def listar_usuarios():
