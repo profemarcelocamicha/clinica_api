@@ -5,7 +5,7 @@ from app.models import db, Usuario
 # usuarios_bp = Blueprint("usuarios_bp", __name__)
 usuarios_bp = Blueprint("usuarios", __name__, url_prefix="/usuarios")
 
-@usuarios_bp.route("", methods=["POST"])
+@usuarios_bp.route("/", methods=["POST"])
 def crear_usuario():
     data = request.json
     nuevo_usuario = Usuario(
@@ -59,7 +59,7 @@ def notificar_usuario():
 #         "usuarios": [u.to_dict() for u in usuarios]
 #     }
 
-@usuarios_bp.route("", methods=["GET"])
+@usuarios_bp.route("/", methods=["GET"])
 def listar_usuarios():
     usuarios = Usuario.query.all()
     return {
