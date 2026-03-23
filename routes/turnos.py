@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from models import db, Turno
+from app.models import db, Turno
 
 # turnos_bp = Blueprint("turnos", __name__)
 turnos_bp = Blueprint("turnos_bp", __name__)
