@@ -1,6 +1,7 @@
 import requests
 
-url = 'https://clinica-api-0n5q.onrender.com/api/tablas'
+# url = 'https://clinica-api-0n5q.onrender.com/api/tablas'
+url = 'https://clinica-api-dev.onrender.com/api/tablas'
 
 
 
