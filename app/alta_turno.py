@@ -4,7 +4,7 @@
 import requests
 
 # url = 'http://localhost:5000/api/turnos'
-URL = 'https://clinica-api-0n5q.onrender.com/api/turnos'
+URL = 'https://clinica-api-dev.onrender.com/api/turnos'
 
 
 def crear_turno(data, url=URL):
