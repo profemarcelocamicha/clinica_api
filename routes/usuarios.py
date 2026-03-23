@@ -2,8 +2,8 @@ from flask import Blueprint, request, jsonify
 from app.models import db, Usuario
 # from services.notifications import enviar_notificacion
 
-usuarios_bp = Blueprint("usuarios_bp", __name__)
-
+# usuarios_bp = Blueprint("usuarios_bp", __name__)
+usuarios_bp = Blueprint("usuarios", __name__, url_prefix="/usuarios")
 
 @usuarios_bp.route("", methods=["POST"])
 def crear_usuario():
