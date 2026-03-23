@@ -1,6 +1,6 @@
 import requests
 
-url = "https://clinica-api-0n5q.onrender.com/api/usuarios"
+url = "https://clinica-api-dev.onrender.com/api/usuarios"
 data = {
     "userId": "prueba123",
     "email": "test@gmail.com",
