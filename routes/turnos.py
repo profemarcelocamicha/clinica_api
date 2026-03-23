@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from app.models import db, Turno
 
 # turnos_bp = Blueprint("turnos", __name__)
-turnos_bp = Blueprint("turnos_bp", __name__, url_prefix="/turnos")
+turnos_bp = Blueprint("turnos_bp", __name__)
 
 
 @turnos_bp.route("/", methods=["POST"])
