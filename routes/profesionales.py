@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import db, Profesional
 
-profesionales_bp = Blueprint("profesionales_bp", __name__)
+profesionales_bp = Blueprint("profesionales", __name__)
 
 @profesionales_bp.route("/", methods=["POST"])
 def crear_profesional():
