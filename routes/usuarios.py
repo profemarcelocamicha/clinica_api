@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import db, Usuario
+from app.models import db, Usuario
 # from services.notifications import enviar_notificacion
 
 usuarios_bp = Blueprint("usuarios_bp", __name__)
