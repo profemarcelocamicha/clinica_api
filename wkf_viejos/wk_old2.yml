@@ -1,0 +1,129 @@
+# wk
+name: CI-CD Enterprise
+
+on:
+  pull_request:
+    branches: [develop, qa, main]
+
+  push:
+    branches: [develop, qa, main]
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+
+  # =========================
+  # 🧪 CI - TESTS (PR)
+  # =========================
+  tests:
+    name: Tests (PR)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Tests unitarios
+        run: pytest -m unit --maxfail=1 --disable-warnings
+
+      - name: Tests integración
+        run: pytest -m integration
+
+
+  # =========================
+  # 🔐 SECURITY (SOLO QA)
+  # =========================
+  security-tests:
+    name: Security Scan (PR → QA)
+    if: github.event_name == 'pull_request' && github.base_ref == 'qa'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: security-${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+
+      - name: Instalar herramientas de seguridad
+        run: |
+          pip install bandit safety
+
+      - name: Análisis estático (Bandit)
+        run: bandit -r . -ll
+
+      - name: Vulnerabilidades en dependencias (Safety)
+        run: safety check
+
+
+  # =========================
+  # 🚀 CD - DEV
+  # =========================
+  deploy-dev:
+    name: Deploy DEV
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+
+    environment: dev
+
+    steps:
+      - name: Deploy a Render DEV
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_DEV }}
+
+
+  # =========================
+  # 🚀 CD - QA
+  # =========================
+  deploy-qa:
+    name: Deploy QA
+    if: github.event_name == 'push' && github.ref == 'refs/heads/qa'
+    runs-on: ubuntu-latest
+
+    environment: qa
+
+    steps:
+      - name: Deploy a Render QA
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_QA }}
+
+
+  # =========================
+  # 🚀 CD - PROD (PROTEGIDO)
+  # =========================
+  deploy-prod:
+    name: Deploy PROD
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://tu-app.onrender.com
+
+    steps:
+      - name: Deploy a Render PROD
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRD }}
