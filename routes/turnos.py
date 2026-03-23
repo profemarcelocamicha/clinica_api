@@ -3,9 +3,9 @@ from flask import Blueprint, request, jsonify
 from app.models import db, Turno
 
 # turnos_bp = Blueprint("turnos", __name__)
-turnos_bp = Blueprint("turnos_bp", __name__)
+turnos_bp = Blueprint("turnos", __name__, url_prefix="/api/turnos")
 
-@turnos_bp.route("", methods=["POST"])
+@turnos_bp.route("/", methods=["POST"])
 def crear_turno():
     data = request.json
     nuevo_turno = Turno(
@@ -19,7 +19,7 @@ def crear_turno():
     db.session.commit()
     return jsonify({"mensaje": "Turno creado con éxito", "turno": nuevo_turno.to_dict()}), 201
 
-@turnos_bp.route("", methods=["GET"])
+@turnos_bp.route("/", methods=["GET"])
 def listar_turnos():
     turnos = Turno.query.all()
     return jsonify([t.to_dict() for t in turnos])

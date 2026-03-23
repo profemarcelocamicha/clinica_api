@@ -4,7 +4,7 @@ import os
 
 env_bp = Blueprint("env", __name__)
 
-@env_bp.route("/env")
+@env_bp.route("/")
 def env():
     return jsonify({
         "ENV": os.getenv("ENV"),
