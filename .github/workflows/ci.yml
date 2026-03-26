@@ -30,7 +30,11 @@ jobs:
       - name: Tests integración
         run: pytest -m "integration"
 
-      - name: Ejecutar tests de seguridad (solo en main)
+      - name: Tests seguridad
+        run: pytest -m "security"
+
+
+      - name: Ejecutar tests de seguridad avanzada (solo en main)
         if: github.base_ref == 'main'
         run: |
-          pytest -m "security"        
+          pytest -m "security_advanced"        
