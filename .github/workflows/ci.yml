@@ -1,15 +1,9 @@
 name: CI - Tests
 
 on:
-  push:
-    branches:
-      - develop
-      - qa
-      - main
-      - feature/**
   pull_request:
     branches:
-      - qa
+      - develop      
       - main
 
 jobs:
@@ -35,3 +29,10 @@ jobs:
 
       - name: Tests integración
         run: pytest -m "integration"
+
+
+
+      - name: Ejecutar tests de seguridad avanzada (solo en main)
+        if: github.base_ref == 'main'
+        run: |
+          pytest -m "security"        
