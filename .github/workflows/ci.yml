@@ -32,7 +32,7 @@ jobs:
 
 
 
-      - name: Ejecutar tests de seguridad avanzada (solo en main)
+      - name: Ejecutar tests de seguridad (solo en main)
         if: github.base_ref == 'main'
         run: |
           pytest -m "security"        
