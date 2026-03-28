@@ -1,15 +1,11 @@
 name: CD - Con Aprobación en producción
-
 on:
   push:
     branches:
       - develop
       - main
-
-  workflow_dispatch:   # trigger manual
-
+  workflow_dispatch: null
 jobs:
-
   deploy-dev:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
@@ -17,7 +13,6 @@ jobs:
       - name: Deploy a DEV
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_DEV }}
-
   deploy-qa:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -25,7 +20,6 @@ jobs:
       - name: Deploy a QA
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_QA }}
-
   deploy-prd:
     needs: deploy-qa
     runs-on: ubuntu-latest
