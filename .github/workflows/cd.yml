@@ -27,10 +27,9 @@ jobs:
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_QA }}
 
   deploy-prd:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: deploy-qa
     runs-on: ubuntu-latest
-    environment: production   # aprobación obligatoria
+    environment: production
     steps:
       - name: Deploy a PRD
-        run: |
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRD }}
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRD }}
