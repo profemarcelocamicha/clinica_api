@@ -11,7 +11,27 @@ jobs:
     steps:
       - name: Deploy a DEV
         run: |
+          echo "Iniciando deploy en DEV..."
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_DEV }}
+
+          echo "Esperando que el servicio inicie..."
+          sleep 10
+
+          for i in {1..10}; do
+            echo "Intento $i..."
+
+            if curl -f https://clinica-api-dev.onrender.com/health; then
+              echo "✅ Deploy OK"
+              exit 0
+            fi
+
+            echo "Aún no disponible..."
+            sleep 20
+          done
+
+          echo "❌ Deploy FALLÓ - API no responde después de 10 intentos"
+          exit 1
+
   deploy-qa:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
