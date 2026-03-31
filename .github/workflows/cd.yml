@@ -14,7 +14,7 @@ jobs:
           echo "Iniciando deploy en DEV..."
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_DEV }}
           echo "Esperando que el servicio inicie..."
-          sleep 180
+          sleep 120
           for i in {1..10}; do
             echo "Intento $i..."
             if curl -f https://clinica-api-dev.onrender.com/health; then
@@ -28,6 +28,7 @@ jobs:
           exit 1
 
   deploy-qa:
+    needs: deploy-dev      
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +37,7 @@ jobs:
           echo "Iniciando deploy en QA..."
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_QA }}
           echo "Esperando que el servicio inicie..."
-          sleep 180
+          sleep 120
           for i in {1..10}; do
             echo "Intento $i..."
             if curl -f https://clinica-api-qa.onrender.com/health; then
@@ -50,8 +51,8 @@ jobs:
           exit 1
   
   deploy-prd:
+    needs: deploy-qa    
     if: github.ref == 'refs/heads/main'
-    needs: deploy-qa
     runs-on: ubuntu-latest
     environment: production   # requiere aprobación manual
     steps:
@@ -60,7 +61,7 @@ jobs:
           echo "Iniciando deploy en PRD..."
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRD }}
           echo "Esperando que el servicio inicie..."
-          sleep 180
+          sleep 120
           for i in {1..10}; do
             echo "Intento $i..."
             if curl -f https://clinica-api-prd.onrender.com/health; then
