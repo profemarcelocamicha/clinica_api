@@ -28,8 +28,8 @@ jobs:
           exit 1
 
   deploy-qa:
-    needs: deploy-dev      
     if: github.ref == 'refs/heads/main'
+    needs: deploy-dev          
     runs-on: ubuntu-latest
     steps:
       - name: Deploy a QA
@@ -51,8 +51,8 @@ jobs:
           exit 1
   
   deploy-prd:
-    needs: deploy-qa    
     if: github.ref == 'refs/heads/main'
+    needs: deploy-qa        
     runs-on: ubuntu-latest
     environment: production   # requiere aprobación manual
     steps:
