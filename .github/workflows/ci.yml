@@ -17,12 +17,10 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Instalar dependencias
-        run: |
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+        run: pip install -r requirements-dev.txt
 
       - name: Tests unitarios
         run: pytest -m "unit"
@@ -30,9 +28,11 @@ jobs:
       - name: Tests integración
         run: pytest -m "integration"
 
+      - name: Análisis de código con Bandit
+        run: bandit -r .
 
 
       - name: Ejecutar tests de seguridad (solo en main)
         if: github.base_ref == 'main'
-        run: |
-          pytest -m "security"        
+        run: pytest -m "security"        
+
