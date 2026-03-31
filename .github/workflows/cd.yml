@@ -17,7 +17,7 @@ jobs:
           sleep 120
           for i in {1..10}; do
             echo "Intento $i..."
-            if curl -f https://clinica-api-dev.onrender.com/health; then
+            if curl -s -f --max-time 5 https://clinica-api-dev.onrender.com/health; then
               echo "✅ Deploy en DEV OK"
               exit 0
             fi
@@ -39,7 +39,7 @@ jobs:
           sleep 120
           for i in {1..10}; do
             echo "Intento $i..."
-            if curl -f https://clinica-api-qa.onrender.com/health; then
+            if curl -s -f --max-time 5 https://clinica-api-qa.onrender.com/health; then
               echo "✅ Deploy en QA OK"
               exit 0
             fi
@@ -63,7 +63,7 @@ jobs:
           sleep 120
           for i in {1..10}; do
             echo "Intento $i..."
-            if curl -f https://clinica-api-prd.onrender.com/health; then
+            if curl -s -f --max-time 5 https://clinica-api-prd.onrender.com/health; then
               echo "✅ Deploy en PRD OK"
               exit 0
             fi
