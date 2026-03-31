@@ -8,6 +8,8 @@ from routes.usuarios import usuarios_bp
 from routes.turnos import turnos_bp
 from routes.profesionales import profesionales_bp
 
+import os
+
 
 def create_app():
     app = Flask(__name__)
@@ -32,5 +34,9 @@ def create_app():
 
 app = create_app()
 
+# if __name__ == "__main__":
+#     app.run(debug=True)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug = os.getenv("DEBUG", "False").lower() == "true"    
+    app.run(debug=debug)
